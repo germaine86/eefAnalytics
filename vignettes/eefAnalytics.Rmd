@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 ```
 Package: eefAnalytics
-Version: 1.0.10
+Version: 1.0.11
 Date: 2021-02-11
 Title: Robust Analytical Methods for Evaluating Educational
         Interventions using Randomised Controlled Trials Designs
