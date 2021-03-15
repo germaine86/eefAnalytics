@@ -82,7 +82,7 @@ Argument      |Description
 ## Value
 
 
- Returns a bar plot to compare the different methods.
+ Returns a bar plot to compare the different methods. The returned figure can be further modified as any  [`ggplot`](https://ggplot2.tidyverse.org/reference/ggplot.html) 
 
 
 ## Examples

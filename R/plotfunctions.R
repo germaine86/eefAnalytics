@@ -52,7 +52,7 @@ plot.eefAnalytics <- function(x,group, Conditional=TRUE,ES_Total=TRUE,slope=FALS
 #' @details \code{ComparePlot} produces a bar plot which compares the effect sizes and the associated confidence intervals from the different models.
 #' For a multilevel model, it shows the effect size based on residual variance and total variance.
 #'
-#' @return Returns a bar plot to compare the different methods.
+#' @return Returns a bar plot to compare the different methods. The returned figure can be further modified as any \code{\link[ggplot2]{ggplot}}
 #' @example inst/examples/compareExample.R
 ComparePlot <- function(eefAnalyticsList,group, Conditional=TRUE,ES_Total=TRUE,modelNames){
   if(!is(eefAnalyticsList,"list")){stop("eefAnalyticsList is not a list.")}

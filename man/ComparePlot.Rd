@@ -30,7 +30,7 @@ ES_Total=FALSE should be specified for effect size based on within school or res
 \item{modelNames}{a string factor containing the names of model to compare. See examples below.}
 }
 \value{
-Returns a bar plot to compare the different methods.
+Returns a bar plot to compare the different methods. The returned figure can be further modified as any \code{\link[ggplot2]{ggplot}}
 }
 \description{
 It generates bar plot that compares the effect size from eefAnalytics' methods.
