@@ -26,13 +26,13 @@ covParm
 
 plot(output1)
 
-###############################################
-## MLM analysis of cluster randomised trials ##	 
-## with bootstrap confidence intervals       ##
-###############################################
+##################################################
+## MLM analysis of cluster randomised trials    ##
+## with residual bootstrap confidence intervals ##
+##################################################
 
 output2 <- crtFREQ(Posttest~ Intervention+Prettest,random="School",
-		intervention="Intervention",nBoot=1000,data=crtData)
+		intervention="Intervention",nBoot=1000,type="residual",data=crtData)
 
 
 ### Effect size

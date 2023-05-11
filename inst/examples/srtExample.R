@@ -12,7 +12,7 @@ ES1 <- output1$ES
 ES1
 
 ###################################################################
-## Analysis of simple randomised trials using Hedges Effect Size ## 
+## Analysis of simple randomised trials using Hedges Effect Size ##
 ## with Permutation p-value                                      ##
 ###################################################################
 
@@ -31,11 +31,11 @@ plot(output2, group=1)
 
 ###################################################################
 ## Analysis of simple randomised trials using Hedges Effect Size ##
-## with non-parametric bootstrap confidence intervals            ##
+## with non-parametric Basic bootstrap confidence intervals      ##
 ###################################################################
 
 output3 <- srtFREQ(Posttest~ Intervention+Prettest,
-		intervention="Intervention",nBoot=1000,data=mstData)
+		intervention="Intervention",nBoot=1000,ci="basic",data=mstData)
 
 ES3 <- output3$ES
 ES3
@@ -79,7 +79,7 @@ output6 <- srtFREQ(Posttest~ Intervention+Prettest+as.factor(School),
 		intervention="Intervention",nBoot=1000,data=mstData)
 
 ES6 <- output6$ES
-ES6 
+ES6
 
 ### plot bootstrapped values
 

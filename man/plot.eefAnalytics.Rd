@@ -15,7 +15,7 @@ For a two arm trial, the maximum number of values to consider is 1 and 2 for thr
 
 \item{Conditional}{a logical value to indicate whether to plot the conditional effect size.
 The default is Conditional=TRUE, otherwise Conditional=FALSE should be specified for plot based on the unconditional effect size.
- Conditional variance is total or residual variance from a multilevel model with fixed effects, whilst unconditional variance is total variance or residual variance from a multilevel model with only intercept as fixed effect.}
+Conditional variance is total or residual variance from a multilevel model with fixed effects, whilst unconditional variance is total variance or residual variance from a multilevel model with only intercept as fixed effect.}
 
 \item{ES_Total}{A logical value indicating whether to plot the effect size based on total variance or within school variance.
 The default is ES_Total=TRUE, to plot the effect size using total variance.

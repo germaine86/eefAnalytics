@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(eefAnalytics)
+#library(eefAnalytics)
 ```
 
 
@@ -23,21 +23,22 @@ library(eefAnalytics)
 
 ```
 Package: eefAnalytics
-Title: Robust Analytical Methods for Evaluating Educational Interventions using Randomised Controlled Trials Designs
 Version: 1.1.1
-Author: Germaine Uwimpuhwe, Akansha Singh, Dimitris Vallis, Steve Higgins, ZhiMin Xiao, Ewoud De Troyer and Adetayo Kasim
-Maintainer: Germaine Uwimpuhwe <uwimpuhwe.germaine@durham.ac.uk>
+Date: 2021-02-11
+Title: Robust Analytical Methods for Evaluating Educational
+        Interventions using Randomised Controlled Trials Designs
 Description: Analysing data from evaluations of educational interventions using a randomised controlled trial design. Various analytical tools to perform sensitivity analysis using different methods are supported (e.g. frequentist models with bootstrapping and permutations options, Bayesian models). The included commands can be used for simple randomised trials, cluster randomised trials and multisite trials. The methods can also be used more widely beyond education trials. This package can be used to evaluate other intervention designs using Frequentist and Bayesian multilevel models.
+Author: Germaine Uwimpuhwe, Akansha Singh, Steve Higgins, ZhiMin Xiao, Ewoud De Troyer and Adetayo Kasim
+Maintainer: Germaine Uwimpuhwe <germaine.uwimpuhwe@durham.ac.uk>
 Imports: lme4, mvtnorm, graphics, stats, rstanarm, ggplot2, methods
-License: GPL (>= 3)
+License: GPL-3
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+LazyData: true
+RoxygenNote: 7.1.1
 Suggests: knitr, rmarkdown, testthat
 VignetteBuilder: knitr
-LazyData: true
-URL: https://github.com/germaine86/eefanalytics
-BugReports: https://github.com/germaine86/eefanalytics/issues
+URL: https://github.com/germaine86/eefAnalytics
+BugReports: https://github.com/germaine86/eefAnalytics/issues
 ```
 
 
@@ -167,8 +168,8 @@ Argument      |Description
 ```baseln```     |     A string variable allowing the user to specify the reference category for intervention variable. When not specified, the first level will be used as a reference.
 ```adaptD```     |     As this function uses rstanarm, this term provides the target average proposal acceptance probability during Stan’s adaptation period. Default is NULL.
 ```nsim```     |     number of MCMC iterations per chain. Default is 2000.
-```condopt```     |     additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed only to the conditional model specification (for example, defining priors only for the conditional model, etc.).
-```uncopt```     |     additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed only to the unconditional model specification (for example, defining priors only for the unconditional model, etc.).
+```condopt```     |     additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed only to the conditional model specification.
+```uncopt```     |     additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed only to the unconditional model specification.
 ```data```     |     data frame containing the data to be analysed.
 ```threshold```     |     a scalar or vector of pre-specified threshold(s) for estimating Bayesian posterior probability such that the observed effect size is greater than or equal to the threshold(s).
 ```...```     |     additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed both to the conditional and unconditional model specifications.
@@ -328,7 +329,7 @@ Argument      |Description
 
 *   `Perm` : A "nPerm x 2w" matrix containing permutated effect sizes using residual variance and total variance. "w" denotes number of intervention. "w=1" for two arm trial and "w=2" for three arm trial excluding the control group. It is produced only when `nPerm` is specified. 
 
-*   `Bootstrap` : A "nBoot x 2w" matrix containing the bootstrapped effect sizes using residual variance (Within) and total variance (Total), where "w" denotes number of interventions excluding the control group. For example, "w=1" for a two arm trial and "w=2" for a three arm trial excluding the control group. It is only produced when `nBoot` is specified. 
+*   `Bootstrap` : A "nBoot x 2w" matrix containing the bootstrapped effect sizes using residual variance (Within) and total variance (Total). "w" denotes number of interventions excluding the control group. For example, "w=1" for a two arm trial and "w=2" for a three arm trial excluding the control group. It is only produced when `nBoot` is specified. 
 
 *   `Unconditional` : A list of unconditional effect sizes, covParm, Perm and Bootstrap obtained based on variances from the unconditional model (model with only the intercept as a fixed effect).  
 
@@ -463,8 +464,8 @@ Argument      |Description
 ```baseln```     |     A string variable allowing the user to specify the reference category for intervention variable. When not specified, the first level will be used as a reference.
 ```adaptD```     |     As this function uses rstanarm, this term provides the target average proposal acceptance probability during Stan’s adaptation period. Default is NULL.
 ```nsim```     |     number of MCMC iterations per chain. Default is 2000.
-```condopt```     |     additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed only to the conditional model specification (for example, defining priors only for the conditional model, etc.).
-```uncopt```     |     additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed only to the unconditional model specification (for example, defining priors only for the unconditional model, etc.).
+```condopt```     |     additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed only to the conditional model specification.
+```uncopt```     |     additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed only to the unconditional model specification.
 ```data```     |     data frame containing the data to be analysed.
 ```threshold```     |     a scalar or vector of pre-specified threshold(s) for estimating Bayesian posterior probability that the observed effect size is greater than or equal to the threshold(s).
 ```...```     |     additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed both to the conditional and unconditional model specifications.
@@ -625,7 +626,7 @@ Argument      |Description
 
 *   `Perm` : A "nPerm x 2w" matrix containing permutated effect sizes using residual variance and total variance. "w" denotes number of intervention. "w=1" for two arm trial and "w=2" for three arm trial excluding the control group. It is produced only when `nPerm` is specified. 
 
-*   `Bootstrap` : A "nBoot x 2w" matrix containing the bootstrapped effect sizes using residual variance (Within) and total variance (Total), where "w" denotes number of interventions excluding the control group. For example, "w=1" for a two arm trial and "w=2" for a three arm trial excluding the control group. It is only produced when `nBoot` is specified. 
+*   `Bootstrap` : A "nBoot x 2w" matrix containing the bootstrapped effect sizes using residual variance (Within) and total variance (Total). "w" denotes number of interventions excluding the control group. For example, "w=1" for a two arm trial and "w=2" for a three arm trial excluding the control group. It is only produced when `nBoot` is specified. 
 
 *   `Unconditional` : A list of unconditional effect sizes, covParm, Perm and Bootstrap obtained based on variances from the unconditional model (model with only the intercept as a fixed effect). 
 
@@ -882,8 +883,8 @@ Argument      |Description
 ```baseln```     |     A string variable allowing the user to specify the reference category for intervention variable. When not specified, the first level will be used as a reference.
 ```adaptD```     |     As this function uses rstanarm, this term provides the target average proposal acceptance probability during Stan’s adaptation period. Default is NULL.
 ```nsim```     |     A number of MCMC iterations per chain. Default is 2000.
-```condopt```     |     additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed only to the conditional model specification (for example, defining priors only for the conditional model, etc.).
-```uncopt```     |     additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed only to the unconditional model specification (for example, defining priors only for the unconditional model, etc.).
+```condopt```     |     additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed only to the conditional model specification.
+```uncopt```     |     additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed only to the unconditional model specification.
 ```data```     |     Data frame containing the data to be analysed.
 ```threshold```     |     a scalar or vector of pre-specified threshold(s) for estimating Bayesian posterior probability such that the observed effect size is greater than or equal to the threshold(s).
 ```...```     |     Additional arguments of [`stan_lmer`](https://mc-stan.org/rstanarm/reference/stan_glmer.html) to be passed both to the conditional and unconditional model specifications.

@@ -11,10 +11,12 @@
 #' @param formula The model to be analysed is of the form y~x1+x2+.... Where y is the outcome variable and Xs are the independent variables.
 #' @param intervention A string variable specifying the "intervention variable" as appearing in the formula and the data. See example below.
 #' @param baseln A string variable allowing the user to specify the reference category for intervention variable. When not specified, the first level will be used as a reference.
-#' @param adaptD As this function uses rstanarm, this term provides the target average proposal acceptance probability during Stan’s adaptation period. Default is NULL.
-#' @param nsim A number of MCMC iterations per chain. Default is 2000.
 #' @param threshold a scalar or vector of pre-specified threshold(s) for estimating Bayesian posterior probability such that the observed effect size is greater than or equal to the threshold(s).
-#' @param ... Additional arguments of \code{\link[rstanarm]{stan_glm}} to be passed to the function.
+#' @param adaptD As this function uses rstanarm, this term provides the target average proposal acceptance probability during Stan’s adaptation period. Default is NULL.
+#' @param nsim number of MCMC iterations per chain. Default is 2000.
+#' @param condopt additional arguments of \code{\link[rstanarm]{stan_glm}} to be passed only to the conditional model specification (for example, defining priors only for the conditional model, etc.).
+#' @param uncopt additional arguments of \code{\link[rstanarm]{stan_glm}} to be passed only to the unconditional model specification (for example, defining priors only for the unconditional model, etc.).
+#' @param ... Additional arguments of \code{\link[rstanarm]{stan_glm}} to be passed both to the conditional and unconditional model specifications.
 #' @param data Data frame containing the data to be analysed.
 #' @return S3 object; a list consisting of
 #' \itemize{
@@ -26,13 +28,13 @@
 #' \item \code{Unconditional}: A list of unconditional effect sizes, sigma2 and ProbES obtained based on residual variance from the unconditional model (model with only the intercept as a fixed effect).
 #'  }
 #' @example inst/examples/srtBExample.R
-srtBayes <- function(formula,intervention,baseln,adaptD,nsim=2000,data,threshold=1:10/10,...)UseMethod("srtBayes")
+srtBayes <- function(formula,intervention,baseln,adaptD,nsim=2000,condopt,uncopt,data,threshold=1:10/10,...)UseMethod("srtBayes")
 
 #' @export
-srtBayes.default <- function(formula,intervention,baseln,adaptD,nsim=2000,data,threshold=1:10/10,...){stop("No correct formula input given.")}
+srtBayes.default <- function(formula,intervention,baseln,adaptD,nsim=2000,condopt,uncopt,data,threshold=1:10/10,...){stop("No correct formula input given.")}
 
 #' @export
-srtBayes.formula <- function(formula,intervention,baseln,adaptD,nsim=2000,data,threshold=1:10/10,...){
+srtBayes.formula <- function(formula,intervention,baseln,adaptD,nsim=2000,condopt,uncopt,data,threshold=1:10/10,...){
 
   #if(nsim<2000){stop("nsim must be at least 2000")}
 
@@ -49,7 +51,8 @@ srtBayes.formula <- function(formula,intervention,baseln,adaptD,nsim=2000,data,t
   intervention <- intervention
   trt <- data[,which(colnames(data)==intervention)]
   btp  <- which(tmp %in% paste0(intervention, unique(data[, intervention]) ))
-  if(missing(adaptD)){adaptD=NULL}
+  if(missing(condopt)){condopt=NULL}
+  if(missing(uncopt)){uncopt=NULL}
   LHS.formula <- "post"
   RHS.formula <-paste(tmp[-1], collapse = "+")
   new.formula0 <- as.formula(post~1)
@@ -57,7 +60,8 @@ srtBayes.formula <- function(formula,intervention,baseln,adaptD,nsim=2000,data,t
   new.data <- data.frame(post=posttest, fixedDesignMatrix[,-1])
 
   if(length(tmp3)!= 1){stop("Intervention variable misspecified")}
-  output <- srtB(formula=new.formula, unc.formula=new.formula0,intervention=intervention, adaptD=adaptD,nsim=nsim,data1=new.data,threshold=threshold,btp=btp,...)
+  if(missing(adaptD)){adaptD=NULL}
+  output <- srtB(formula=new.formula, unc.formula=new.formula0,intervention=intervention,data1=new.data,threshold=threshold,tmp=tmp,btp=btp,adaptD=adaptD,nsim=nsim,condopt=condopt,uncopt=uncopt,...)
   output$Method <- "LM"
   output$Function <- "srtBayes"
   class(output) <- "eefAnalytics"
@@ -71,9 +75,10 @@ srtBayes.formula <- function(formula,intervention,baseln,adaptD,nsim=2000,data,t
 
 
 ## - internal
-srtB <- function(formula,unc.formula,intervention,tmp,btp, adaptD=adaptD,nsim=nsim,data1,threshold,...){
-  freqFit <- stan_glm(formula=formula, data=data1,adapt_delta =adaptD, seed = 1234,iter=nsim,... )
-  freqFit0 <-stan_glm(formula=unc.formula,data=data1,adapt_delta =adaptD, seed = 1234,iter=nsim,... )
+srtB <- function(formula,unc.formula,intervention,tmp,btp,data1,threshold,adaptD=adaptD,nsim=nsim,condopt,uncopt,...){
+
+  freqFit <- do.call(stan_glm, c(list(formula = formula, adapt_delta=adaptD,iter=nsim,seed=1234, data = data1, ...), condopt))
+  freqFit0 <-do.call(stan_glm, c(list(formula = unc.formula, adapt_delta=adaptD,iter=nsim, seed=1234, data = data1, ...), uncopt))
 
   Sim_Beta <- data.frame(as.matrix(freqFit))
   #btp <- which(substring(names(Sim_Beta),1,nchar(intervention))==intervention &
@@ -137,8 +142,5 @@ Bsrt.Summary <- function(freqFit,freqFit0, Sim_Beta, btp){
   ModelSmry <- list(Beta=Beta, Sim_Beta_t=Sim_Beta_t, sigma2.1=sigma2.1, Sim_sigma2.1=Sim_sigma2.1, sigma2.2=sigma2.2, Sim_sigma2.2=Sim_sigma2.2, sim_ES1=sim_ES1,sim_ES2=sim_ES2)
   return(ModelSmry)
 }
-
-
-
 
 

@@ -8,10 +8,14 @@ print.eefAnalytics <- function(x,...) {
   Checks <- sum(x$Function %in% c("srtBayes","crtBayes","mstBayes") )
   if(Checks==0){Approach="Frequentist"}else{Approach="Bayesian"}
   cat("\nModel Info:")
-  cat("\n method:   ", x$Method)
-  cat("\n Design:   ", toupper(substr(x$Function,1,3)))
-  cat("\n Approach: ", Approach )
-  cat("\n function: ", x$Function)
+  cat("\n Method:    ", x$Method)
+  cat("\n Design:    ", toupper(substr(x$Function,1,3)))
+  cat("\n Approach:  ", Approach )
+  cat("\n Function:  ", x$Function)
+  if(is.null(x$Bootstrap)==FALSE) {
+    if(x$Function!="srtFREQ") {cat("\n Bootstrap: ", x$Type)}
+    cat("\n CI:        ", x$CI)
+  }
   cat("\n---------\n")
   cat("\n")
   ES0=x$ES
@@ -25,7 +29,7 @@ print.eefAnalytics <- function(x,...) {
   print(ES1)
   cat("\n")
   if(sum(x$Function %in% c("srtBayes","crtBayes","mstBayes") )==0){
-    cat("Please use summary to get more results")
+    cat("Please use summary to get more results \n")
   }else{
     cat("Please use summary to get more results")
     cat("\nAnd use the model object to check for convergence")

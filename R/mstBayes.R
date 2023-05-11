@@ -15,8 +15,10 @@
 #' @param baseln A string variable allowing the user to specify the reference category for intervention variable. When not specified, the first level will be used as a reference.
 #' @param adaptD As this function uses rstanarm, this term provides the target average proposal acceptance probability during Stan’s adaptation period. Default is NULL.
 #' @param nsim number of MCMC iterations per chain. Default is 2000.
+#' @param condopt additional arguments of \code{\link[rstanarm]{stan_glm}} to be passed only to the conditional model specification (for example, defining priors only for the conditional model, etc.).
+#' @param uncopt additional arguments of \code{\link[rstanarm]{stan_glm}} to be passed only to the unconditional model specification (for example, defining priors only for the unconditional model, etc.).
 #' @param threshold a scalar or vector of pre-specified threshold(s) for estimating Bayesian posterior probability that the observed effect size is greater than or equal to the threshold(s).
-#' @param ... additional arguments of \code{\link[rstanarm:stan_glmer]{stan_lmer}} to be passed to the function.
+#' @param ... additional arguments of \code{\link[rstanarm:stan_glmer]{stan_lmer}} to be passed both to the conditional and unconditional model specifications.
 #' @param data data frame containing the data to be analysed.
 #' @return S3 object; a list consisting of
 #' \itemize{
@@ -29,14 +31,13 @@
 #' \item \code{Unconditional}: A list of unconditional effect sizes, covParm and ProbES obtained based on between and within cluster variances from the unconditional model (model with only the intercept as a fixed effect).
 #' }
 #' @example inst/examples/mstBExample.R
-mstBayes <- function(formula,random,intervention,baseln,adaptD,nsim=2000,data,threshold=1:10/10,...)UseMethod("mstBayes")
+mstBayes <- function(formula,random,intervention,baseln,adaptD,nsim=2000,condopt,uncopt,data,threshold=1:10/10,...)UseMethod("mstBayes")
 
 #' @export
-mstBayes.default <- function(formula,random,intervention,baseln,adaptD,nsim=2000,data,threshold=1:10/10,...){stop("No correct formula input given.")}
+mstBayes.default <- function(formula,random,intervention,baseln,adaptD,nsim=2000,condopt,uncopt,data,threshold=1:10/10,...){stop("No correct formula input given.")}
 
 #' @export
-mstBayes.formula <- function(formula,random,intervention,baseln,adaptD,nsim=2000,data,threshold=1:10/10,...){
-  #if(nsim<2000){stop("nsim must be at least 2000")}
+mstBayes.formula <- function(formula,random,intervention,baseln,adaptD,nsim=2000,condopt,uncopt,data,threshold=1:10/10,...){
 
   data <- na.omit(data.frame(data)[ ,unique(c(all.vars(formula),random, intervention))])
   data <- data[order(data[,which(colnames(data)==random)]),]
@@ -65,6 +66,8 @@ mstBayes.formula <- function(formula,random,intervention,baseln,adaptD,nsim=2000
   tmp[1]  <- "Intercept"
   colnames(fixedDesignMatrix)<- tmp
   #btp  <- which(substring(tmp,1,nchar(intervention))==intervention & nchar(tmp)==(nchar(intervention)+1))
+  if(missing(condopt)){condopt=NULL}
+  if(missing(uncopt)){uncopt=NULL}
   btp  <- which(tmp %in% paste0(intervention, unique(data[, intervention]) ))
   btp1 <- tmp[btp]
   btp2 <- gsub(intervention,"trt", btp1)
@@ -87,7 +90,7 @@ mstBayes.formula <- function(formula,random,intervention,baseln,adaptD,nsim=2000
   if(length(tmp3)!= 1){stop("Intervention variable misspecified")}
   #if(nsim < 2000){stop("nsim >= 10000 is recommended")}
 
-  output <-  erantMstBAYES(formula=new.formula, unc.formula=new.formula0,intervention=intervention,data1=new.data,cluster=random, adaptD=adaptD,nsim=nsim,threshold=threshold,btp=btp,btp2=btp2,...)
+  output <-  erantMstBAYES(formula=new.formula, unc.formula=new.formula0,intervention=intervention,data1=new.data,cluster=random,threshold=threshold,btp=btp,btp2=btp2,adaptD=adaptD,nsim=nsim,condopt=condopt,uncopt=uncopt,...)
   output$Method <- "MLM"
   output$Function <- "mstBayes"
   class(output) <- "eefAnalytics"
@@ -106,10 +109,10 @@ mstBayes.formula <- function(formula,random,intervention,baseln,adaptD,nsim=2000
 
 ## - internal
 
-erantMstBAYES<- function(formula,unc.formula,intervention,data1,cluster,  adaptD=adaptD,nsim=nsim,threshold,btp,btp2,...){
+erantMstBAYES<- function(formula,unc.formula,intervention,data1,cluster,threshold,btp,btp2,adaptD=adaptD,nsim=nsim,condopt,uncopt,...){
 
-  freqFit <- stan_lmer(formula=formula, data=data1,adapt_delta =adaptD, seed = 1234,iter=nsim,...)
-  freqFit0 <-stan_lmer(formula=unc.formula,data=data1,adapt_delta =adaptD, seed = 1234,iter=nsim,...)
+  freqFit <- do.call(stan_lmer, c(list(formula = formula, seed=1234,adapt_delta=adaptD,iter=nsim, data = data1, ...), condopt))
+  freqFit0 <-do.call(stan_lmer, c(list(formula = unc.formula, seed=1234,adapt_delta=adaptD,iter=nsim, data = data1, ...), uncopt))
 
   Sim_Beta <- data.frame(as.matrix(freqFit))
 

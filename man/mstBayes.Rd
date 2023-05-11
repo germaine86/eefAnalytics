@@ -11,6 +11,8 @@ mstBayes(
   baseln,
   adaptD,
   nsim = 2000,
+  condopt,
+  uncopt,
   data,
   threshold = 1:10/10,
   ...
@@ -29,17 +31,21 @@ mstBayes(
 
 \item{nsim}{number of MCMC iterations per chain. Default is 2000.}
 
+\item{condopt}{additional arguments of \code{\link[rstanarm]{stan_glm}} to be passed only to the conditional model specification (for example, defining priors only for the conditional model, etc.).}
+
+\item{uncopt}{additional arguments of \code{\link[rstanarm]{stan_glm}} to be passed only to the unconditional model specification (for example, defining priors only for the unconditional model, etc.).}
+
 \item{data}{data frame containing the data to be analysed.}
 
 \item{threshold}{a scalar or vector of pre-specified threshold(s) for estimating Bayesian posterior probability that the observed effect size is greater than or equal to the threshold(s).}
 
-\item{...}{additional arguments of \code{\link[rstanarm:stan_glmer]{stan_lmer}} to be passed to the function.}
+\item{...}{additional arguments of \code{\link[rstanarm:stan_glmer]{stan_lmer}} to be passed both to the conditional and unconditional model specifications.}
 }
 \value{
 S3 object; a list consisting of
 \itemize{
 \item \code{Beta}: Estimates and credible intervals for variables specified in the model. Use \code{summary.eefAnalytics} to get Rhat and effective sample size for each estimate.
-\item \code{ES}: Conditional Hedges' g effect size and its 95% credible intervals.
+\item \code{ES}: Conditional Hedges' g effect size and its 95\% credible intervals.
 \item \code{covParm}: A list of variance decomposition into between cluster variance-covariance matrix (schools and school by intervention) and within cluster variance (Pupils). It also contains intra-cluster correlation (ICC).
 \item \code{SchEffects}: A vector of the estimated deviation of each school from the intercept and intervention slope.
 \item \code{ProbES}: A matrix of Bayesian posterior probabilities such that the observed effect size is greater than or equal to a pre-specified threshold(s).
@@ -57,7 +63,7 @@ if(interactive()){
   data(mstData)
 
   ########################################################
-  ## Bayesian analysis of cluster randomised trials     ##
+  ## Bayesian analysis of multisite randomised trials   ##
   ########################################################
 
   output <- mstBayes(Posttest~ Intervention+Prettest,random="School",
@@ -82,5 +88,28 @@ if(interactive()){
   ### plot posterior probability of an effect size to be bigger than a pre-specified threshold
 
   plot(output,group=1)
+
+
+  #############################################################################################
+  ## Bayesian analysis of multisite randomised trials using informative priors for treatment ##
+  #############################################################################################
+
+  ### define priors for explanatory variables
+
+  my_prior <- normal(location = c(0,6), scale = c(10,1))
+
+  ### specify the priors for the conditional model only
+
+  output2 <- mstBayes(Posttest~ Prettest+Intervention,random="School",
+                      intervention="Intervention",nsim=2000,data=mstData,
+                      condopt=list(prior=my_prior))
+
+  ### Fixed effects
+  beta2 <- output2$Beta
+  beta2
+
+  ### Effect size
+  ES2 <- output2$ES
+  ES2
 }
 }

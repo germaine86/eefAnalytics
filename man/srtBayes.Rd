@@ -10,6 +10,8 @@ srtBayes(
   baseln,
   adaptD,
   nsim = 2000,
+  condopt,
+  uncopt,
   data,
   threshold = 1:10/10,
   ...
@@ -24,24 +26,28 @@ srtBayes(
 
 \item{adaptD}{As this function uses rstanarm, this term provides the target average proposal acceptance probability during Stan’s adaptation period. Default is NULL.}
 
-\item{nsim}{A number of MCMC iterations per chain. Default is 2000.}
+\item{nsim}{number of MCMC iterations per chain. Default is 2000.}
+
+\item{condopt}{additional arguments of \code{\link[rstanarm]{stan_glm}} to be passed only to the conditional model specification (for example, defining priors only for the conditional model, etc.).}
+
+\item{uncopt}{additional arguments of \code{\link[rstanarm]{stan_glm}} to be passed only to the unconditional model specification (for example, defining priors only for the unconditional model, etc.).}
 
 \item{data}{Data frame containing the data to be analysed.}
 
 \item{threshold}{a scalar or vector of pre-specified threshold(s) for estimating Bayesian posterior probability such that the observed effect size is greater than or equal to the threshold(s).}
 
-\item{...}{Additional arguments of \code{\link[rstanarm]{stan_glm}} to be passed to the function.}
+\item{...}{Additional arguments of \code{\link[rstanarm]{stan_glm}} to be passed both to the conditional and unconditional model specifications.}
 }
 \value{
 S3 object; a list consisting of
 \itemize{
 \item \code{Beta}: Estimates and credible intervals for the variables specified in the model. Use \code{summary.eefAnalytics} to get Rhat and effective sample size for each estimate.
-\item \code{ES}: Conditional Hedges' g effect size and its 95% credible intervals.
+\item \code{ES}: Conditional Hedges' g effect size and its 95\% credible intervals.
 \item \code{sigma2}: Residual variance.
 \item \code{ProbES}: A matrix of Bayesian posterior probabilities such that the observed effect size is greater than or equal to a pre-specified threshold(s).
 \item \code{Model}: A stan_glm object used in ES computation, this object can be used for convergence diagnostic.
 \item \code{Unconditional}: A list of unconditional effect sizes, sigma2 and ProbES obtained based on residual variance from the unconditional model (model with only the intercept as a fixed effect).
- }
+}
 }
 \description{
 \code{srtBayes} performs analysis of educational trials under the assumption of independent errors among pupils using Bayesian framework with Stan.
@@ -53,7 +59,7 @@ if(interactive()){
 data(mstData)
 
 ########################################################
-## Bayesian analysis of cluster randomised trials     ##
+## Bayesian analysis of simple randomised trials      ##
 ########################################################
 
 output <- srtBayes(Posttest~ Intervention+Prettest,
@@ -78,5 +84,28 @@ plot(output)
 ### plot posterior probability of an effect size to be bigger than a pre-specified threshold
 
 plot(output,group=1)
+
+###########################################################################################
+## Bayesian analysis of simple randomised trials using informative priors for treatment  ##
+###########################################################################################
+
+### define priors for explanatory variables
+
+my_prior <- normal(location = c(0,6), scale = c(10,1))
+
+### specify the priors for the conditional model only
+
+output2 <- srtBayes(Posttest~ Prettest+Intervention,
+                    intervention="Intervention",
+                    nsim=2000,data=mstData,
+                    condopt=list(prior=my_prior))
+
+### Fixed effects
+beta2 <- output2$Beta
+beta2
+
+### Effect size
+ES2 <- output2$ES
+ES2
 }
 }

@@ -1,5 +1,4 @@
 
-
 ###################################################################################################
 ############# Bayesian Multilevel Analysis of Cluster Randomised Education Trials
 ##################################################################################################
@@ -16,8 +15,10 @@
 #' @param baseln A string variable allowing the user to specify the reference category for intervention variable. When not specified, the first level will be used as a reference.
 #' @param adaptD As this function uses rstanarm, this term provides the target average proposal acceptance probability during Stan’s adaptation period. Default is NULL.
 #' @param nsim number of MCMC iterations per chain. Default is 2000.
+#' @param condopt additional arguments of \code{\link[rstanarm]{stan_glm}} to be passed only to the conditional model specification (for example, defining priors only for the conditional model, etc.).
+#' @param uncopt additional arguments of \code{\link[rstanarm]{stan_glm}} to be passed only to the unconditional model specification (for example, defining priors only for the unconditional model, etc.).
 #' @param threshold a scalar or vector of pre-specified threshold(s) for estimating Bayesian posterior probability such that the observed effect size is greater than or equal to the threshold(s).
-#' @param ... additional arguments of \code{\link[rstanarm:stan_glmer]{stan_lmer}} to be passed to the function.
+#' @param ... additional arguments of \code{\link[rstanarm:stan_glmer]{stan_lmer}} to be passed both to the conditional and unconditional model specifications.
 #' @param data data frame containing the data to be analysed.
 #' @return S3 object; a list consisting of
 #' \itemize{
@@ -30,15 +31,13 @@
 #' \item \code{Unconditional}: A list of unconditional effect sizes, covParm and ProbES obtained based on between and within cluster variances from the unconditional model (model with only the intercept as a fixed effect).
 #' }
 #' @example inst/examples/crtBExample.R
-crtBayes <- function(formula,random,intervention,baseln,adaptD,nsim=2000,data,threshold=1:10/10,...)UseMethod("crtBayes")
+crtBayes <- function(formula,random,intervention,baseln,adaptD,nsim=2000,condopt,uncopt,data,threshold=1:10/10,...)UseMethod("crtBayes")
 
 #' @export
-crtBayes.default <- function(formula,random,intervention,baseln,adaptD,nsim=2000,data,threshold=1:10/10,...){stop("No correct formula input given.")}
+crtBayes.default <- function(formula,random,intervention,baseln,adaptD,nsim=2000,condopt,uncopt,data,threshold=1:10/10,...){stop("No correct formula input given.")}
 
 #' @export
-crtBayes.formula <- function(formula,random,intervention,baseln,adaptD,nsim=2000,data,threshold=1:10/10,...){
-
-  #if(nsim<2000){stop("nsim must be at least 2000")}
+crtBayes.formula <- function(formula,random,intervention,baseln,adaptD,nsim=2000,condopt,uncopt,data,threshold=1:10/10,...){
 
   data <- na.omit(data.frame(data)[ ,unique(c(all.vars(formula),random, intervention))])
   data <- data[order(data[,which(colnames(data)==random)]),]
@@ -70,6 +69,8 @@ crtBayes.formula <- function(formula,random,intervention,baseln,adaptD,nsim=2000
   posttest <- model.response(mf)
   new.data <- data.frame(post=posttest, fixedDesignMatrix[,-1],cluster=cluster)
   btp  <- which(tmp %in% paste0(intervention, unique(data[, intervention]) ))
+  if(missing(condopt)){condopt=NULL}
+  if(missing(uncopt)){uncopt=NULL}
 
   LHS.formula <- "post"
   RHS.formula <-paste(tmp[-1], collapse = "+")
@@ -83,7 +84,7 @@ crtBayes.formula <- function(formula,random,intervention,baseln,adaptD,nsim=2000
   if(length(tmp3)!= 1){stop("Intervention variable misspecified")}
   #if(nsim < 2000){stop("nsim >= 10000 is recommended")}
 
-  output <-  erantBAYES(formula=new.formula, unc.formula=new.formula0,intervention=intervention,data1=new.data,cluster=random, adaptD=adaptD,nsim=nsim,threshold=threshold,btp=btp,...)
+  output <-  erantBAYES(formula=new.formula, unc.formula=new.formula0,intervention=intervention,data1=new.data,cluster=random,threshold=threshold,btp=btp,adaptD=adaptD,nsim=nsim,condopt=condopt,uncopt=uncopt,...)
   output$Method <- "MLM"
   output$Function <- "crtBayes"
   class(output) <- "eefAnalytics"
@@ -100,10 +101,10 @@ crtBayes.formula <- function(formula,random,intervention,baseln,adaptD,nsim=2000
 
 ## - internal
 
-erantBAYES<- function(formula,unc.formula,intervention,data1,cluster,btp,  adaptD=adaptD,nsim=nsim,threshold,...){
+erantBAYES<- function(formula,unc.formula,intervention,data1,cluster,btp,threshold,adaptD=adaptD,nsim=nsim,condopt,uncopt,...){
 
-  freqFit <- stan_lmer(formula=formula, data=data1,adapt_delta =adaptD, seed = 1234,iter=nsim,...)
-  freqFit0 <-stan_lmer(formula=unc.formula,data=data1,adapt_delta =adaptD, seed = 1234,iter=nsim,...)
+  freqFit <- do.call(stan_lmer, c(list(formula = formula, seed=1234,adapt_delta=adaptD,iter=nsim, data = data1, ...), condopt))
+  freqFit0 <-do.call(stan_lmer, c(list(formula = unc.formula, seed=1234,adapt_delta=adaptD,iter=nsim, data = data1, ...), uncopt))
 
   Sim_Beta <- data.frame(as.matrix(freqFit))
   # btp <- which(substring(names(Sim_Beta),1,nchar(intervention))==intervention &
