@@ -1,0 +1,23 @@
+
+
+              model{
+              for(i in 1:N){
+              post[i] ~ dnorm(mu[i],tau)
+              mu[i] <- beta[1]+beta[2]*Intervention[i]+beta[3]*Prettest[i] 
+              }
+
+              for(k in 1:p){beta[k]~dnorm(0.0,1.0E-06)}
+
+              #PRIORS
+              tau~dgamma(0.001,0.0001)
+              sigma<-1/tau #CONVERT PRECISION TO VARIANCES
+              COND.sigma <- sigma
+
+              # EFFECT SIZE
+              COND.ES <-  beta[2] /sqrt(sigma)
+              UNC.ES <-  beta[2] /sqrt(UNC.sigma)
+              COND.g <- COND.ES* (1-  (3/(4*(N-2)-1)))
+              UNC.g <- UNC.ES* (1-  (3/(4*(N-2)-1)))
+
+              }
+              

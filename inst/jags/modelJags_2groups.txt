@@ -1,0 +1,25 @@
+
+#model 1
+model {
+for (i in 1: N){
+y[i]~dt(mu[i],tau,2)
+mu[i]<-beta[Ti[i]] +b[School[i]]
+Ti[i]~ dcat(pi[])
+T2[i] <- equals(Ti[i],2) #probabiliy for +ve gain group
+}
+for (s in 1: ns){ b[s]~dnorm(0,tau.b) }
+
+PGI[1] <- sum(equals(t,0)*T2)/nc
+PGI[2] <- sum(equals(t,1)*T2)/nt
+GI <-  PGI[2]-PGI[1] #gain index
+
+#priors
+pi[1:2] ~ ddirch(eta[])
+beta[1] ~ dnorm(0.0, 1.0E-6)I(LB,-0.0001)
+beta[2] ~ dnorm(0.0, 1.0E-6)I(0.0001,UB)
+tau ~ dgamma(0.001, 0.001)
+tau.b ~ dgamma(0.001, 0.001)
+sigma <- pow(tau,-1)
+sigma.b <- pow(tau.b,-1)
+}
+
