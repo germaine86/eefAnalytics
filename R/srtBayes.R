@@ -19,7 +19,6 @@
 #' \item \code{ES}: Conditional Hedges' g effect size and its 95% credible intervals.
 #' \item \code{sigma}: Residual variance.
 #' \item \code{ProbES}: A matrix of Bayesian posterior probabilities such that the observed effect size is greater than or equal to a pre-specified threshold(s).
-#' \item \code{Model}: A stan_glm object used in ES computation, this object can be used for convergence diagnostic.
 #' \item \code{Unconditional}: A list of unconditional effect sizes, sigma2 and ProbES obtained based on residual variance from the unconditional model (model with only the intercept as a fixed effect).
 #'  }
 #' @example inst/examples/srtBExample.R
@@ -100,7 +99,7 @@ OLS.function <- function(data, formula, intervention,nsim){
   UNCdata <- list(N=N, post=Pdata1$post)
   jags.UNCparams <- c("sigma")
   # 1. UNC Jags model -----------
-  filenames_OLS_UNC <- file.path("/Users/qingzhang/Desktop/Durham/WP8/eefAnalytics/inst/jags/OLS_UNC.txt")
+  filenames_OLS_UNC <- file.path("inst/jags/OLS_UNC.txt")
   cat(paste("
   model {
     # Likelihood
@@ -135,7 +134,7 @@ OLS.function <- function(data, formula, intervention,nsim){
   jags.params <- c("beta","COND.sigma","UNC.sigma","COND.ES","COND.g","UNC.ES","UNC.g")
 
   # 2. COND Jags model -----------
-  filenames_OLS_CON <- file.path("/Users/qingzhang/Desktop/Durham/WP8/eefAnalytics/inst/jags/SRT.txt")
+  filenames_OLS_CON <- file.path("inst/jags/SRT.txt")
   cat(paste("
 
               model{

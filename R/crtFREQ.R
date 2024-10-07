@@ -33,7 +33,8 @@ crtFREQ.default <- function(formula,random,intervention,baseln,nPerm,nBoot,type,
 
 #' @export
 crtFREQ.formula <- function(formula,random,intervention,baseln,nPerm,nBoot,type,ci,seed,data){
-
+  requireNamespace("lme4", quietly = TRUE) || stop("Please install the 'lme4' package.")
+  #require(lme4)
   data <- na.omit(data.frame(data)[ ,unique(c(all.vars(formula),random, intervention))])
   data <- data[order(data[,which(colnames(data)==random)]),]
   intervention <- intervention

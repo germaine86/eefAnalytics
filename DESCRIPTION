@@ -5,7 +5,6 @@ Version: 1.1.2
 Author: Germaine Uwimpuhwe, Qing Zhang, Akansha Singh, Dimitris Vallis, Steve Higgins, ZhiMin Xiao, Ewoud De Troyer and Adetayo Kasim
 Maintainer: Germaine Uwimpuhwe <germaine.uwimpuhwe@durham.ac.uk>
 Description: Analysing data from evaluations of educational interventions using a randomised controlled trial design. Various analytical tools to perform sensitivity analysis using different methods are supported (e.g. frequentist models with bootstrapping and permutations options, Bayesian models). The included commands can be used for simple randomised trials, cluster randomised trials and multisite trials. The methods can also be used more widely beyond education trials. This package can be used to evaluate other intervention designs using Frequentist and Bayesian multilevel models.
-Imports: lme4, mvtnorm, graphics, stats, rstanarm, ggplot2, methods
 License: AGPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -20,7 +19,10 @@ Depends:
 Imports: 
     R2jags (>= 0.7), 
     ggplot2 (>= 3.4.0), 
-    lme4, 
-    methods, 
-    mvtnorm (>= 1.2.0),
-    coda
+    lme4 (>= 1.1.0), 
+    methods,
+    graphics,
+    stats,
+    mvtnorm (>= 1.1.2),
+    coda (>= 0.19),
+    MCMCvis (>= 0.15)

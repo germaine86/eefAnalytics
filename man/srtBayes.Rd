@@ -19,12 +19,11 @@ srtBayes(formula, intervention, nsim = 10000, data)
 S3 object; a list consisting of
 \itemize{
 \item \code{Beta}: Estimates and credible intervals for the variables specified in the model. Use \code{summary.eefAnalytics} to get Rhat and effective sample size for each estimate.
-\item \code{ES}: Conditional Hedges' g effect size and its 95% credible intervals.
+\item \code{ES}: Conditional Hedges' g effect size and its 95\% credible intervals.
 \item \code{sigma}: Residual variance.
 \item \code{ProbES}: A matrix of Bayesian posterior probabilities such that the observed effect size is greater than or equal to a pre-specified threshold(s).
-\item \code{Model}: A stan_glm object used in ES computation, this object can be used for convergence diagnostic.
 \item \code{Unconditional}: A list of unconditional effect sizes, sigma2 and ProbES obtained based on residual variance from the unconditional model (model with only the intercept as a fixed effect).
- }
+}
 }
 \description{
 \code{srtBayes} performs Bayesian multilevel analysis of Simple Randomised Education Trials (SRT), utilising vague priors

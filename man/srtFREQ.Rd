@@ -27,7 +27,7 @@ srtFREQ(formula, intervention, baseln, nBoot, nPerm, ci, seed, data)
 S3 object; a list consisting of
 \itemize{
 \item \code{Beta}: Estimates and confidence intervals for the variables specified in the model.
-\item \code{ES}: Conditional Hedges'g effect size and its 95% confidence intervals. If nBoot is not specified, 95% confidence intervals are based on standard errors. If nBoot is specified, they are non-parametric bootstrapped confidence intervals.
+\item \code{ES}: Conditional Hedges'g effect size and its 95\% confidence intervals. If nBoot is not specified, 95\% confidence intervals are based on standard errors. If nBoot is specified, they are non-parametric bootstrapped confidence intervals.
 \item \code{sigma2}: Residual variance.
 \item \code{Perm}: A "nPerm x w" matrix containing permutated effect sizes using residual variance. "w" denotes number of intervention. "w=1" for two arm trial and "w=2" for three arm trial excluding the control group. It is produced only if \code{nPerm} is specified.
 \item \code{Bootstrap}: A "nBoot x w" matrix containing the bootstrapped effect sizes using residual variance. "w" denotes number of intervention. "w=1" for two arm trial and "w=2" for three arm trial excluding the control group. It is produced only if \code{nBoot} is specified.

@@ -41,10 +41,12 @@ NULL
 #' @importFrom lme4 lmer ranef VarCorr
 #' @importFrom methods is
 #' @importFrom mvtnorm rmvnorm
-#' @importFrom rstanarm stan_glm stan_lmer stan_glmer
 #' @importFrom graphics abline barplot hist legend lines par plot points text mtext title
-#' @importFrom stats confint lm model.frame model.matrix model.response quantile rnorm na.omit update na.omit as.formula relevel resid predict
+#' @importFrom stats residuals confint lm model.frame model.matrix model.response quantile rnorm na.omit update na.omit as.formula relevel resid predict
 #' @importFrom ggplot2 ggplot aes element_text facet_grid geom_errorbarh geom_point geom_text geom_vline scale_x_continuous scale_y_continuous theme theme_bw unit ylab coord_cartesian
+#' @importFrom R2jags jags autojags
+#' @importFrom MCMCvis MCMCsummary
+#' @importFrom coda nchain as.mcmc
 NULL
 
 #############################################################################

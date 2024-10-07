@@ -61,7 +61,7 @@ mstBayes.formula <- function(formula,random,intervention,nSim=nSim,data){
 
 
   BayesOutput <- MST.function(data=data, formula=formula,random=random, intervention=intervention, nsim=nSim)
-  output  <- errantSummary(bayesObject=BayesOutput,fixedDesignMatrix=fixedDesignMatrix,intervention=intervention)
+  output  <- MSTerrantSummary(bayesObject=BayesOutput,fixedDesignMatrix=fixedDesignMatrix,intervention=intervention)
 
 
   output$Method <- "MLM"
@@ -78,13 +78,13 @@ MST.function <- function(data, formula,random, intervention, nsim){
 
   #### load required packages ###
   requireNamespace("R2jags", quietly = TRUE) || stop("Please install the 'R2jags' package.")
-  require(R2jags)
+  #require(R2jags)
   requireNamespace("lme4", quietly = TRUE) || stop("Please install the 'lme4' package.")
-  require(lme4)
+  #require(lme4)
   requireNamespace("MCMCvis", quietly = TRUE) || stop("Please install the 'MCMCvis' package.")
-  require(MCMCvis)
+  #require(MCMCvis)
   requireNamespace("coda", quietly = TRUE) || stop("Please install the 'coda' package.")
-  require(coda)
+  #require(coda)
 
   #### check if it is a MST design
   Pdata <- na.omit(data[,c(all.vars(formula),random)])
@@ -137,7 +137,7 @@ MST.function <- function(data, formula,random, intervention, nsim){
   jags.UNCparams <- c("sigma","sigma.tt","icc")
   # jags.UNCparams <- c("sigma", "sigma.tt", "icc", "UNC.ES.Within", "UNC.ES.Total", "UNC.g.with", "UNC.g.Total")
   # 1. UNC Jags model -----------
-  filenames_MLM_UNC <- file.path("/Users/qingzhang/Desktop/Durham/WP8/eefAnalytics/inst/jags/MLM_UNC.txt")
+  filenames_MLM_UNC <- file.path("inst/jags/MLM_UNC.txt")
   cat(paste("
                 model {
                 # Likelihood
@@ -209,7 +209,7 @@ MST.function <- function(data, formula,random, intervention, nsim){
                    "UNC.ES.Within","UNC.ES.Total","UNC.g.with","UNC.g.Total","UNC.sigma.Within","UNC.sigma.Total","UNC.ICC","beta", "b2diff")
 
   # 2. COND Jags model -----------
-  filenames_MST <- file.path("/Users/qingzhang/Desktop/Durham/WP8/eefAnalytics/inst/jags/MST.txt")
+  filenames_MST <- file.path("inst/jags/MST.txt")
   cat(paste("
                 model{
                 for(i in 1:N){
@@ -364,7 +364,7 @@ MST.function <- function(data, formula,random, intervention, nsim){
 
 
 #### II. summarise covariance parameters - internal #####
-covSummary <- function(bayesObject){
+MSTcovSummary <- function(bayesObject){
 
   covParm <- bayesObject$covParm ### MCMC
   covParm2 <- colMeans(covParm) # remove all roundings that appear in the middle of functions
@@ -377,7 +377,7 @@ covSummary <- function(bayesObject){
   return(covParm5)
 }
 
-UNCcovSummary <- function(bayesObject){
+MSTUNCcovSummary <- function(bayesObject){
 
   covParm <- bayesObject$Unconditional$covParm ### MCMC
   covParm2 <- colMeans(covParm) # remove all roundings that appear in the middle of functions
@@ -392,7 +392,7 @@ UNCcovSummary <- function(bayesObject){
 
 
 #### III. summarise beta parameters - internal #####
-betaSummary <- function(bayesObject){
+MSTbetaSummary <- function(bayesObject){
 
   betaParm <- bayesObject$Beta
   betaParm2 <- colMeans(betaParm)
@@ -405,7 +405,7 @@ betaSummary <- function(bayesObject){
 
 
 #### IV. summarise Effect Sizes - internal #####
-esSummary <- function(bayesObject,fixedDesignMatrix,intervention){
+MSTesSummary <- function(bayesObject,fixedDesignMatrix,intervention){
 
   esParm <- bayesObject$ES
   esParm2 <- colMeans(esParm)
@@ -430,7 +430,7 @@ esSummary <- function(bayesObject,fixedDesignMatrix,intervention){
 }
 
 #### V. summarise random effects - internal #####
-schSummary <- function(bayesObject){
+MSTschSummary <- function(bayesObject){
 
   schParm <- bayesObject$randomEffects
   schParm2 <- colMeans(schParm)
@@ -444,7 +444,7 @@ schSummary <- function(bayesObject){
 
 
 #### VI. summarise minimum expected effect size - internal #####
-esProb <- function(bayesObject,esOutput){
+MSTesProb <- function(bayesObject,esOutput){
   es <- c(0,0.05,seq(0.1,1,0.1))
   esParm <- bayesObject$ES
   esParm2 <- sapply(es,function(x)colMeans(esParm>=x))
@@ -456,23 +456,23 @@ esProb <- function(bayesObject,esOutput){
 
 
 #### VII. summarise all Bayesian parameters - internal #####
-errantSummary <- function(bayesObject,fixedDesignMatrix,intervention){
-  covValues <- covSummary(bayesObject=bayesObject)
+MSTerrantSummary <- function(bayesObject,fixedDesignMatrix,intervention){
+  covValues <- MSTcovSummary(bayesObject=bayesObject)
   covValues <- data.frame(covValues[c(2,1,3,4)])
   row.names(covValues) <- c("Schools","Pupils","Total","ICC")
   covValues <- t(covValues)
   row.names(covValues ) <- NULL
-  betaValues <- betaSummary(bayesObject=bayesObject)
-  esValues <- esSummary(bayesObject,fixedDesignMatrix,intervention)
-  schValues <-schSummary(bayesObject=bayesObject)
-  es.prob <- esProb(bayesObject=bayesObject,esOutput=esValues)
+  betaValues <- MSTbetaSummary(bayesObject=bayesObject)
+  esValues <- MSTesSummary(bayesObject,fixedDesignMatrix,intervention)
+  schValues <-MSTschSummary(bayesObject=bayesObject)
+  es.prob <- MSTesProb(bayesObject=bayesObject,esOutput=esValues)
 
-  UNCcovValues <- UNCcovSummary(bayesObject=bayesObject)
+  UNCcovValues <- MSTUNCcovSummary(bayesObject=bayesObject)
   UNCcovValues <- data.frame(UNCcovValues)
   row.names(UNCcovValues) <- c("Pupils","Total","ICC")
   UNCcovValues <- t(UNCcovValues)
   row.names(UNCcovValues) <- NULL
-  unconditional= list(ES=round(esSummary(bayesObject$Unconditional,fixedDesignMatrix,intervention),2),
+  unconditional= list(ES=round(MSTesSummary(bayesObject$Unconditional,fixedDesignMatrix,intervention),2),
                       covParm=round(UNCcovValues,2))
 
   output <- list(Beta=round(betaValues,2),

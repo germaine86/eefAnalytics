@@ -78,12 +78,12 @@ crtBayes.formula <- function(formula,random,intervention,nsim=10000,data){
   if(nsim < 2000){stop("nsim >= 10000 is recommended")}
 
   BayesOutput <- CRT.function(data=data, formula=formula,random=random, intervention=intervention, nsim=nsim)
-  output  <- errantSummary(bayesObject=BayesOutput,fixedDesignMatrix=fixedDesignMatrix,intervention=intervention)
+  output  <- CRTerrantSummary(BayesOutput,fixedDesignMatrix,intervention)
 
   output$Method <- "MLM"
   output$Function <- "crtBayes"
   class(output) <- "eefAnalytics"
-  invisible(output)
+  return(output)
 }
 
 #############################################################################################################################
@@ -93,13 +93,13 @@ CRT.function <- function(data, formula,random, intervention, nsim){
 
   #### load required packages ###
   requireNamespace("R2jags", quietly = TRUE) || stop("Please install the 'R2jags' package.")
-  require(R2jags)
+  #require(R2jags)
   requireNamespace("lme4", quietly = TRUE) || stop("Please install the 'lme4' package.")
-  require(lme4)
+  #require(lme4)
   requireNamespace("MCMCvis", quietly = TRUE) || stop("Please install the 'MCMCvis' package.")
-  require(MCMCvis)
+  #require(MCMCvis)
   requireNamespace("coda", quietly = TRUE) || stop("Please install the 'coda' package.")
-  require(coda)
+  #require(coda)
 
   #### check if it is a CRT design
   Pdata <- na.omit(data[,c(all.vars(formula),random)])
@@ -149,7 +149,7 @@ CRT.function <- function(data, formula,random, intervention, nsim){
   #************************
   UNCdata <- list(N=N,M=M, school=Pdata1[,random], post=Pdata1$post)
   jags.UNCparams <- c("sigma","sigma.tt","icc")
-  filenames_MLM_UNC <- file.path("/Users/qingzhang/Desktop/Durham/WP8/eefAnalytics/inst/jags/MLM_UNC.txt")
+  filenames_MLM_UNC <- file.path("inst/jags/MLM_UNC.txt")
   # 1. UNC Jags model -----------
   #### Summarise UNCONDITIONAL JAGS output ####
   UNC.ols<-jags(model.file=filenames_MLM_UNC, data = UNCdata, n.iter= nsim, n.burnin = nsim/2, inits=UNCjags.inits,n.thin = 10, parameters.to.save=jags.UNCparams)
@@ -172,7 +172,7 @@ CRT.function <- function(data, formula,random, intervention, nsim){
                    "UNC.ES.Within","UNC.ES.Total","UNC.g.with","UNC.g.Total","UNC.sigma.Within","UNC.sigma.Total","beta","UNC.ICC")
 
   # 2. COND Jags model -----------
-  filenames_CRT <- file.path("/Users/qingzhang/Desktop/Durham/WP8/eefAnalytics/inst/jags/CRT.txt")
+  filenames_CRT <- file.path("inst/jags/CRT.txt")
   cat(paste("
                 model{
                 for(i in 1:N){
@@ -304,7 +304,7 @@ CRT.function <- function(data, formula,random, intervention, nsim){
 
 
 #### II. summarise covariance parameters - internal #####
-covSummary <- function(bayesObject){
+CRTcovSummary <- function(bayesObject){
 
   covParm <- bayesObject$covParm ### MCMC
   covParm2 <- colMeans(covParm) # remove all roundings that appear in the middle of functions
@@ -317,7 +317,7 @@ covSummary <- function(bayesObject){
   return(covParm5)
 }
 
-UNCcovSummary <- function(bayesObject){
+CRTUNCcovSummary <- function(bayesObject){
 
   covParm <- bayesObject$Unconditional$covParm ### MCMC
   covParm2 <- colMeans(covParm) # remove all roundings that appear in the middle of functions
@@ -332,7 +332,7 @@ UNCcovSummary <- function(bayesObject){
 
 
 #### III. summarise beta parameters - internal #####
-betaSummary <- function(bayesObject){
+CRTbetaSummary <- function(bayesObject){
 
   betaParm <- bayesObject$Beta
   betaParm2 <- colMeans(betaParm)
@@ -345,7 +345,7 @@ betaSummary <- function(bayesObject){
 
 
 #### IV. summarise Effect Sizes - internal #####
-esSummary <- function(bayesObject,fixedDesignMatrix,intervention){
+CRTesSummary <- function(bayesObject,fixedDesignMatrix,intervention){
 
   esParm <- bayesObject$ES
   esParm2 <- colMeans(esParm)
@@ -371,7 +371,7 @@ esSummary <- function(bayesObject,fixedDesignMatrix,intervention){
 
 
 #### V. summarise minimum expected effect size - internal #####
-esProb <- function(bayesObject,esOutput){
+CRTesProb <- function(bayesObject,esOutput){
   es <- c(0,0.05,seq(0.1,1,0.1))
   esParm <- bayesObject$ES
   esParm2 <- sapply(es,function(x)colMeans(esParm>=x))
@@ -383,22 +383,22 @@ esProb <- function(bayesObject,esOutput){
 
 
 #### VI. summarise all Bayesian parameters - internal #####
-errantSummary <- function(bayesObject,fixedDesignMatrix,intervention){
-  covValues <- covSummary(bayesObject=bayesObject)
+CRTerrantSummary <- function(bayesObject,fixedDesignMatrix,intervention){
+  covValues <- CRTcovSummary(bayesObject=bayesObject)
   covValues <- data.frame(covValues)
   row.names(covValues) <- c("Pupils","Total","ICC")
   covValues <- t(covValues)
   row.names(covValues ) <- NULL
-  betaValues <- betaSummary(bayesObject=bayesObject)
-  esValues <- esSummary(bayesObject,fixedDesignMatrix,intervention)
-  es.prob <- esProb(bayesObject=bayesObject,esOutput=esValues)
+  betaValues <- CRTbetaSummary(bayesObject=bayesObject)
+  esValues <- CRTesSummary(bayesObject,fixedDesignMatrix,intervention)
+  es.prob <- CRTesProb(bayesObject=bayesObject,esOutput=esValues)
 
-  UNCcovValues <- UNCcovSummary(bayesObject=bayesObject)
+  UNCcovValues <- CRTUNCcovSummary(bayesObject=bayesObject)
   UNCcovValues <- data.frame(UNCcovValues)
   row.names(UNCcovValues) <- c("Pupils","Total","ICC")
   UNCcovValues <- t(UNCcovValues)
   row.names(UNCcovValues) <- NULL
-  unconditional= list(ES=round(esSummary(bayesObject$Unconditional,fixedDesignMatrix,intervention),2),
+  unconditional= list(ES=round(CRTesSummary(bayesObject$Unconditional,fixedDesignMatrix,intervention),2),
                       covParm=round(UNCcovValues,2))
 
   output <- list(Beta=round(betaValues,2),

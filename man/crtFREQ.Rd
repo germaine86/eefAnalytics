@@ -42,13 +42,13 @@ crtFREQ(
 S3 object; a list consisting of
 \itemize{
 \item \code{Beta}: Estimates and confidence intervals for variables specified in the model.
-\item \code{ES}: Conditional Hedges' g effect size and its 95% confidence intervals. If nBoot is not specified, 95% confidence intervals are based on standard errors. If nBoot is specified, they are non-parametric bootstrapped confidence intervals.
+\item \code{ES}: Conditional Hedges' g effect size and its 95\% confidence intervals. If nBoot is not specified, 95\% confidence intervals are based on standard errors. If nBoot is specified, they are non-parametric bootstrapped confidence intervals.
 \item \code{covParm}: A vector of variance decomposition into between cluster variance (Schools) and within cluster variance (Pupils). It also contains intra-cluster correlation (ICC).
 \item \code{SchEffects}: A vector of the estimated deviation of each school from the intercept.
 \item \code{Perm}: A "nPerm x 2w" matrix containing permutated effect sizes using residual variance and total variance. "w" denotes number of intervention. "w=1" for two arm trial and "w=2" for three arm trial excluding the control group. It is produced only when \code{nPerm} is specified.
 \item \code{Bootstrap}: A "nBoot x 2w" matrix containing the bootstrapped effect sizes using residual variance (Within) and total variance (Total). "w" denotes number of intervention. "w=1" for two arm trial and "w=2" for three arm trial excluding the control group. It is only produced when \code{nBoot} is specified.
 \item \code{Unconditional}: A list of unconditional effect sizes, covParm, Perm and Bootstrap obtained based on variances from the unconditional model (model with only the intercept as a fixed effect).
- }
+}
 }
 \description{
 \code{crtFREQ} performs analysis of cluster randomised education trials using a multilevel model under a frequentist setting.

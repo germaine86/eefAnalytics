@@ -25,8 +25,8 @@
 #'
 #' @return An S3 object containing the following components:
 #' \describe{
-#'   \item{GI}{A data frame containing the Gain Index and its 95\% confidence intervals,
-#'             as well as the Progress Index and its 95\% confidence intervals.}
+#'   \item{GI}{A data frame containing the Gain Index and its 95% confidence intervals,
+#'             as well as the Progress Index and its 95% confidence intervals.}
 #'   \item{Proportions}{A data frame showing the proportion of participants achieving
 #'                      each level of gain (low and high) for both control and
 #'                      intervention groups.}
@@ -40,9 +40,9 @@
 #'
 # GainIndex() function ----
 # Include validation and preparation steps at the beginning of the GainIndex() function
-GainIndex <- function(data, formula, random, intervention, NA.omit=TRUE, n.iter = 20000, n.chains = 3, inits = NULL, model.file = NULL, alpha = 0.05) {
+GainIndex <- function(data, formula, random, intervention, NA.omit=TRUE, n.iter = 20000, n.chains = 3, n.burnin = 10000, inits = NULL, model.file = NULL, alpha = 0.05) {
   requireNamespace("R2jags", quietly = TRUE) || stop("Please install the 'R2jags' package.")
-  require(R2jags)
+  #require(R2jags)
 
   group = 2
 
@@ -50,12 +50,10 @@ GainIndex <- function(data, formula, random, intervention, NA.omit=TRUE, n.iter 
   # Prepare data
   if (group == 2) {
     prepared_data <- prepare_data1(data, formula, random, intervention, NA.omit=NA.omit)
-    model.file <- "inst/jags/modelJags_2groups.txt"
-
+    model.file <- system.file("jags", "modelJags_2groups.txt", package = "eefAnalytics")
   } else if (group == 3) {
     prepared_data <- prepare_data2(data, formula, random, intervention, NA.omit=NA.omit)
-
-    model.file <- "inst/jags/modelJags_3groups.txt"
+    model.file <- system.file("jags", "modelJags_3groups.txt", package = "eefAnalytics")
   } else {
     stop("Invalid group number. Please select either 2 or 3.")
   }
@@ -226,7 +224,7 @@ prepare_data1 <- function(data, formula, random, intervention, NA.omit = T, ...)
 }
 
 # Prepared for 3 groups setting ----
-prepare_data2 <- function(data, formula,NA.omit=T,...) {
+prepare_data2 <- function(data, formula,random,NA.omit=T,...) {
   data=validate_data(data, formula, random, intervention, NA.omit)
   data$School <- as.numeric(factor(data$School, levels = unique(data$School)))
   data <- data[order(data$School), ]

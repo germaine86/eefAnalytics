@@ -12,6 +12,7 @@ GainIndex(
   NA.omit = TRUE,
   n.iter = 20000,
   n.chains = 3,
+  n.burnin = 10000,
   inits = NULL,
   model.file = NULL,
   alpha = 0.05
@@ -22,7 +23,7 @@ GainIndex(
 columns: School, Posttest, Pretest, Intervention. Data should not have
 any missing values in these columns.}
 
-\item{formula}{the model to be analysed is of the form y ~ x1+x2+.... Where y is the outcome variable and Xs are the independent variables. Formula does not need to include `Intervention` variable.}
+\item{formula}{the model to be analysed is of the form y ~ x1+x2+.... Where y is the outcome variable and Xs are the independent variables. Formula does not need to include \code{Intervention} variable.}
 
 \item{random}{a string variable specifying the "clustering variable" as contained in the data. See example below.}
 
@@ -37,6 +38,8 @@ If not provided, the function uses default TRUE.}
 
 \item{n.chains}{Number of chains to run in the MCMC simulation.}
 
+\item{n.burnin}{Number of burn-in iterations to be discarded before analysis.}
+
 \item{inits}{Optional; a list of initial values for the JAGS model. If NULL,
 the function generates default initial values.}
 
@@ -44,50 +47,34 @@ the function generates default initial values.}
 If not provided, the function uses default path.}
 
 \item{alpha}{significant level, default alpha = 0.05.}
-
-\item{n.burnin}{Number of burn-in iterations to be discarded before analysis.}
 }
 \value{
 An S3 object containing the following components:
 \describe{
-  \item{GI}{A data frame containing the Gain Index and its 95\% confidence intervals,
-            as well as the Progress Index and its 95\% confidence intervals.}
-  \item{Proportions}{A data frame showing the proportion of participants achieving
-                     each level of gain (low and high) for both control and
-                     intervention groups.}
-  \item{Timing}{A vector with execution time details, including user and elapsed
-                time in seconds.}
+\item{GI}{A data frame containing the Gain Index and its 95\% confidence intervals,
+as well as the Progress Index and its 95\% confidence intervals.}
+\item{Proportions}{A data frame showing the proportion of participants achieving
+each level of gain (low and high) for both control and
+intervention groups.}
+\item{Timing}{A vector with execution time details, including user and elapsed
+time in seconds.}
 }
 }
 \description{
-This function computes the Gain Index and other related statistics for educational
-intervention data, specifically tailored to evaluate outcomes based on 2 groups. It supports flexible configurations
-for JAGS modeling, including specifying initial values, the number of iterations,
-burn-in period, and the number of chains. It automatically handles data preparation
-and model file selection based on the specified number of groups.
+This function computes the Gain Index and other related statistics for educational trials.
+Gain index provides a proportion of pupils who would not have make good progress without intervention.
+This function supports flexible configurations for JAGS modeling.
 }
 \examples{
-######## EXAMPLE ONE: PACT ###########
-load("~/Desktop/Durham/PACT/R codes for PACT 3/PACT3_T3.RData")
-output1 <- GainIndex(data = PACT3_T3,
-                     formula = T3Latent~T1Latent,
-                     random = "School",
-                     intervention = "Intervention",
-                     NA.omit = TRUE,
-                     alpha = 0.05)
-output1
-
-
-
-######### EXAMPLE TWO: crtData #########
-load("~/Desktop/Durham/WP8/eefAnalytics/data/crtData.rda")
+######### EXAMPLE ONE: crtData #########
+data(crtData)
 output1 <- GainIndex(data = crtData, formula = Posttest~Prettest, random = "School",
                      intervention = "Intervention", NA.omit = T, alpha = 0.05)
 output1
 
 
-########## EXAMPLE THREE: mstData ######
-load("~/Desktop/Durham/WP8/eefAnalytics/data/mstData.rda")
+########## EXAMPLE TWO: mstData ######
+data(mstData)
 output1 <- GainIndex(data = mstData, formula = Posttest~Prettest, random = "School",
                      intervention = "Intervention", NA.omit = T, alpha = 0.05)
 output1

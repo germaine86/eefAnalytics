@@ -11,11 +11,11 @@ A multisite trial dataset containing 54 schools. This data contains a random sam
 }
 \details{
 \itemize{
-  \item Posttest: posttest scores
-  \item Prettest: prettest scores
-  \item Intervention: the indicator for the intervention groups in a two arm trial,
+\item Posttest: posttest scores
+\item Prettest: prettest scores
+\item Intervention: the indicator for the intervention groups in a two arm trial,
 coded as 1 for intervention group and 0 for control group.
-  \item Intervention2: a simulated indicator for intervention groups in a three arm trial.
-  \item School: numeric school identifier
+\item Intervention2: a simulated indicator for intervention groups in a three arm trial.
+\item School: numeric school identifier
 }
 }

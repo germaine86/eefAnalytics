@@ -11,11 +11,11 @@ A cluster randomised trial dataset containing 22 schools. The data contains a ra
 }
 \details{
 \itemize{
-  \item Posttest: posttest scores
-  \item Prettest: prettest scores
-  \item Intervention: the indicator for intervention groups in a two arm trial,
+\item Posttest: posttest scores
+\item Prettest: prettest scores
+\item Intervention: the indicator for intervention groups in a two arm trial,
 coded as 1 for intervention group and 0 for control group.
-  \item Intervention2: a simulated indicator for intervention groups in a three arm trial.
-  \item School: numeric school identifier
+\item Intervention2: a simulated indicator for intervention groups in a three arm trial.
+\item School: numeric school identifier
 }
 }

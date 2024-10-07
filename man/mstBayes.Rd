@@ -20,12 +20,12 @@ mstBayes(formula, random, intervention, nSim, data)
 \value{
 S3 object; a list consisting of:
 \itemize{
-  \item \code{Beta}: Estimates and credible intervals for the predictors specified in the model (posterior distributions).
-  \item \code{ES}: Hedges' g effect size for the intervention(s). If bootstrapping is not used, 95% credible intervals are computed based on MCMC sampling.
-  \item \code{covParm}: Variance components broken down into between-cluster variance (e.g., between schools), within-cluster variance (e.g., within pupils), and intra-cluster correlation (ICC)..
-  \item \code{randomEffects}: Posterior estimates of random intercepts for each cluster (e.g., schools).
-  \item \code{ProbES}: A matrix showing the probability of observing an effect size larger than various thresholds (0, 0.05, 0.10, ...).
-  \item \code{Unconditional}: A list containing the unconditional effect size and variance decomposition.
+\item \code{Beta}: Estimates and credible intervals for the predictors specified in the model (posterior distributions).
+\item \code{ES}: Hedges' g effect size for the intervention(s). If bootstrapping is not used, 95\% credible intervals are computed based on MCMC sampling.
+\item \code{covParm}: Variance components broken down into between-cluster variance (e.g., between schools), within-cluster variance (e.g., within pupils), and intra-cluster correlation (ICC)..
+\item \code{randomEffects}: Posterior estimates of random intercepts for each cluster (e.g., schools).
+\item \code{ProbES}: A matrix showing the probability of observing an effect size larger than various thresholds (0, 0.05, 0.10, ...).
+\item \code{Unconditional}: A list containing the unconditional effect size and variance decomposition.
 }
 }
 \description{

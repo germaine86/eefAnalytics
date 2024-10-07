@@ -37,7 +37,8 @@ mstFREQ.default <- function(formula,random,intervention,baseln,nPerm,data,type,c
 
 #' @export
 mstFREQ.formula <- function(formula,random,intervention,baseln,nPerm,data,type,ci,seed,nBoot){
-
+  requireNamespace("lme4", quietly = TRUE) || stop("Please install the 'lme4' package.")
+  #require(lme4)
   data <- na.omit(data[ ,unique(c(all.vars(formula),random, intervention))])
   data <- data[order(data.frame(data)[,which(colnames(data)==random)],data[,which(colnames(data)==intervention)]),]
   trt <- data[,which(colnames(data)==intervention)]
