@@ -1,0 +1,41 @@
+
+                model{
+                for(i in 1:N){
+                post[i] ~ dnorm(mu[i],tau)
+                mu[i] <- beta[1]+beta[2]*Prettest[i]+beta[3]*Intervention[i]+b1[School[i]] 
+                }
+
+                for(j in 1:M){
+                b1[j]~dnorm(0.0,tau.b1)
+                }
+
+                tau.b1~dgamma(0.001,0.0001)
+                sigma.b1<-1/tau.b1
+                tau~dgamma(0.001,0.0001)
+                sigma<-1/tau
+
+                for(k in 1:p){beta[k]~dnorm(0.0,1.0E-06)}
+
+                # ICC and TOTAL VARIANCE
+                sigma.Total <-sigma + sigma.b1
+                COND.icc <- sigma.b1 * pow(sigma.Total ,-1)
+                UNC.ICC <- UNC.icc
+
+                #sigmas
+                COND.sigma.Total <- sigma.Total
+                COND.sigma.Within <- sigma.b1
+                UNC.sigma.Total <- UNC.sigma.tt
+                UNC.sigma.Within <- UNC.sigma
+
+                # EFFECT SIZE
+                COND.ES.Within<-  beta[3] /sqrt(COND.sigma.Within)#conditional
+                COND.ES.Total <-  beta[3] /sqrt(COND.sigma.Total)#conditional
+                UNC.ES.Within<-  beta[3] /sqrt(UNC.sigma.Within)#unconditional
+                UNC.ES.Total <-  beta[3] /sqrt(UNC.sigma.Total)#unconditional
+
+                COND.g.with<- COND.ES.Within* (1- (3/(4*(N-2)-1)))#conditional
+                COND.g.Total <-  COND.ES.Total* (1- (3/(4*(N-2)-1)))#conditional
+                UNC.g.with<- UNC.ES.Within* (1- (3/(4*(N-2)-1)))#unconditional
+                UNC.g.Total <-  UNC.ES.Total* (1- (3/(4*(N-2)-1)))#unconditional
+                }
+                
