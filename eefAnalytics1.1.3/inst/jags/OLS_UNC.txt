@@ -1,0 +1,14 @@
+
+  model {
+    # Likelihood
+    for (i in 1:N) {
+      post[i] ~ dnorm(mu[i], tau)
+      mu[i] <- beta0
+    }
+
+    # Priors
+    beta0 ~ dnorm(0, 0.0001) # Overall intercept
+    tau ~ dgamma(0.001, 0.001) # Precision for within-cluster variation (residual variance)
+    sigma <- 1 / sqrt(tau) # Within-cluster standard deviation (Residual SD)
+
+  }

@@ -1,0 +1,46 @@
+
+                model {
+                # Likelihood
+                for (i in 1:N) {
+                post[i] ~ dnorm(mu[i], tau)
+                mu[i] <- beta0 + u[school[i]]
+                }
+
+                # Random intercepts for each cluster
+                for (j in 1:M) {
+                u[j] ~ dnorm(0, tau_u) # Random effect for each cluster
+                }
+
+                # Priors
+                beta0 ~ dnorm(0, 0.0001) # Overall intercept
+                tau ~ dgamma(0.001, 0.001) # Precision for within-cluster variation (residual variance)
+                sigma <- 1 / sqrt(tau) # Within-cluster standard deviation (Residual SD)
+
+                tau_u ~ dgamma(0.001, 0.001) # Precision for between-cluster variation
+                sigma_u <- 1 / sqrt(tau_u) # Between-cluster standard deviation
+
+                # Total variance
+                sigma.tt <- sigma_u^2 + sigma^2 # Total variance (between + within variance)
+                # ICC calculation
+                icc <- sigma_u^2 / sigma.tt # Intraclass correlation coefficient
+
+                # ICC and TOTAL VARIANCE
+                UNC.icc <- icc
+
+                #sigmas
+                UNC.sigma.Total <- sigma.tt
+                UNC.sigma.Within <- sigma
+
+                # Effect size calculation
+                # UNC.ES.Within: Effect size based on within-cluster variance
+                #UNC.ES.Within <- beta0 / sigma # beta0 divided by within-cluster standard deviation
+
+                # UNC.ES.Total: Effect size based on total variance
+                #UNC.ES.Total <- beta0 / sqrt(sigma.tt) # beta0 divided by total standard deviation
+
+                # Hedges' g correction for effect size (within-cluster)
+                #UNC.g.with <- UNC.ES.Within * (1 - (3 / (4 * (N - 2) - 1)))
+                # Hedges' g correction for effect size (total)
+                #UNC.g.Total <- UNC.ES.Total * (1 - (3 / (4 * (N - 2) - 1)))
+                }
+                
